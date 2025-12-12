@@ -1,4 +1,4 @@
-package boletín03;
+package boletín03_arraysBidimensionales;
 
 import java.util.Scanner;
 

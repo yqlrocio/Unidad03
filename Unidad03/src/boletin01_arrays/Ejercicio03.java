@@ -1,4 +1,4 @@
-package boletin01;
+package boletin01_arrays;
 
 import java.util.Scanner;
 
