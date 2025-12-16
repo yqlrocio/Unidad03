@@ -11,25 +11,41 @@ public class Ejercicio02 {
 		 */
 		
 		// 
-		int[] numeros = {1, 4, 9, -3, 9, 1, -9}; 
+		int [][] matriz = {
+				{1,2,3},
+				{4,5,6}
+		}; 
 		
-		int maximo = maximo (numeros); 
+		int [][] transpuesta = transponer(matriz); 
 		
-		System.out.println("Máximo = " + maximo);
-	}
-	
-	public static int maximo (int numeros []) {
-		if (numeros == null || numeros.length == 0){
-			throw new IllegalArgumentException ("La tabla no puede ser nulo");
-	}
-	int maximoActual = numeros[0]; 
-	
-	for (int i = 0; i < numeros.length; i++) {
-		if(numeros[i] > maximoActual) { 
-		maximoActual = numeros [i]; 
+		System.out.println("Original: ");
+		imprimirMatriz(matriz); 
+		
+		System.out.println("Transpuesta: ");
+		imprimirMatriz(transpuesta);
+		
 		}
-		}
-	return maximoActual; 
 	
+		public static int [][] transponer(int [][] matriz) {
+		if (matriz == null) {
+			throw new IllegalArgumentException("La matriz no puede ser null ");
+		}
+		if (matriz.length == null ) {
+			throw new IllegalArgumentException ("La ");
+		}
+		
+		int filas = matriz.length;
+		int columas = matriz[0].length;
+		
+		for (int IindiceFila=0, indiceFila < fila; indiceFila++) { 
+			if(matriz[indiceFila] == null || matriz[indiceFila].length != columnas) {
+				throw new IllegalArgumentException ("Todas las filas deben tener el mismo número")			
+			}
+		}
+		int [][] resultado = new int [columnas][filas]; 
+		
+		for (int indice = 0; fila < filas; fila++) {
+			for ()
+		}
 	}
 }

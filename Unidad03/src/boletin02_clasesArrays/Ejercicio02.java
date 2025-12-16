@@ -1,4 +1,4 @@
-package boletin02;
+package boletin02_clasesArrays;
 
 public class Ejercicio02 {
 
