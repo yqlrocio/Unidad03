@@ -44,9 +44,10 @@ public class CajaBuena {
 			for (int i = 0; i < numeroProductos; i++) {
 				System.out.println("Nombre del producto " + (i + 1) + ":");
 				
-				// .trim()= quitar espacio sobrantes del incio y del final
-				nombresProducto[i] = scanner.nextLine().trim();
+				
+				nombresProducto[i] = scanner.nextLine().trim(); // .trim()= quitar espacio sobrantes del incio y del final
 
+				
 				preciosProducto[i] = leerDoubleMin(scanner, "Precio del producto " + (i + 1) + ":", 0.0);
 				unidadesProducto[i] = leerEnteroEnRango(scanner, "Unidades del producto " + (i + 1) + ":", 1, 100);
 

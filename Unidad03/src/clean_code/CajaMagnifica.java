@@ -5,74 +5,97 @@ import java.util.Scanner;
 
 public class CajaMagnifica {
 
-	public static void main(String[] args) {
+	/**
+	 * Sistema de Gestión de Ventas con Caja Registradora Permite registrar compras,
+	 * aplicar descuentos y gestionar stock
+	 */
 
+	// ============= CONSTANTES DEL SISTEMA =============
+	// Valores fijos que no cambian durante la ejecución
+	private static final double IVA = 0.21; // 21% de IVA
+	private static final double DESCUENTO_MAS_DE_100 = 0.10; // 10% descuento compras >100€
+	private static final double DESCUENTO_POR_SOCIO = 0.05; // 5% descuento para socios
+	private static final double UMBRAL_DESCUENTO = 100.0; // Límite para aplicar descuento
+
+	// Configuración del stock
+	private static final int TAMANO_STOCK = 200; // Tamaño del inventario
+	private static final int STOCK_INICIAL = 10; // Unidades iniciales por producto
+
+	// Límites para validación
+	private static final int MAX_PRODUCTOS = 50; // Máximo productos por compra
+	private static final int MAX_UNIDADES = 100; // Máximo unidades por producto
+	private static final int MIN_PRODUCTOS = 1; // Mínimo productos por compra
+	private static final int MIN_UNIDADES = 1; // Mínimo unidades por producto
+
+	/**
+	 * Método principal - Punto de entrada del programa
+	 */
+	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 
-		final double IVA = 0.21;
-		final double DESCUENTO_MAS_DE_100 = 0.10;
-		final double DESCUENTO_POR_SOCIO = 0.05;
-		final double UMBRAL_DESCUENTO = 100.0;
+		// 1. Inicializar el sistema
+		int[] stock = inicializarStock(TAMANO_STOCK, STOCK_INICIAL);
+		mostrarMensajeBienvenida();
 
-		final int TAM_STOCK = 200;
-		final int STOCK_INICIAL = 10;
+		boolean continuarComprando = true;
 
-		int[] stock = inicializarStock(TAM_STOCK, STOCK_INICIAL);
-
-		boolean seguirComprando = true;
-
-		while (seguirComprando) {
-			int numeroProductos = leerEnteroEnRango(scanner, "¿Cuántos productos vas a introducir?", 1, 50);
-
-			String[] nombresProducto = new String[numeroProductos];
-			double[] preciosProducto = new double[numeroProductos];
-			int[] unidadesProducto = new int[numeroProductos];
-
-			double subtotal = 0.0;
-
-			for (int i = 0; i < numeroProductos; i++) {
-				nombresProducto[i] = leerTextoNoVacio(scanner, "Nombre del producto " + (i + 1) + ":");
-
-				preciosProducto[i] = leerDoubleMin(scanner, "Precio del producto " + (i + 1) + ":", 0.0);
-
-				unidadesProducto[i] = leerEnteroEnRango(scanner, "Unidades del producto " + (i + 1) + ":", 1, 100);
-
-				subtotal += preciosProducto[i] * unidadesProducto[i];
-
-				int indexStock = obtenerIndexStock(nombresProducto[i], i, TAM_STOCK);
-				actualizarStock(stock, indexStock, unidadesProducto[i]);
-			}
-
-			boolean esSocio = leerSiNo(scanner, "¿Es socio?");
-
-			double[] totales = calcularTotales(subtotal, esSocio, UMBRAL_DESCUENTO, DESCUENTO_MAS_DE_100,
-					DESCUENTO_POR_SOCIO, IVA);
-
-			double descuentoSubtotal = totales[0];
-			double descuentoSocio = totales[1];
-			double baseImponible = totales[2];
-			double importeIva = totales[3];
-			double total = totales[4];
-
-			imprimirTicket(nombresProducto, preciosProducto, unidadesProducto, subtotal, descuentoSubtotal,
-					descuentoSocio, baseImponible, importeIva, total);
-
-			seguirComprando = leerSiNo(scanner, "¿Quieres registrar otra compra?");
+		// 2. Bucle principal: atender múltiples clientes
+		while (continuarComprando) {
+			atenderCliente(scanner, stock);
+			continuarComprando = preguntarOtraCompra(scanner);
 		}
 
+		// 3. Finalizar programa
+		mostrarMensajeDespedida();
 		scanner.close();
 	}
 
 	/**
-	 * Inicializa un array de stock con un número de unidades inicial para cada
-	 * posición.
-	 *
-	 * @param tamStock     tamaño del array de stock.
-	 * @param stockInicial unidades iniciales para cada posición.
-	 * @return array de stock inicializado.
+	 * Atiende a un cliente completo: desde entrada de productos hasta ticket
 	 */
-	private static int[] inicializarStock(int tamStock, int stockInicial) {
-		int[] stock = new int[tamStock];
+	private static void atenderCliente(Scanner scanner, int[] stock) {
+		// 1. Obtener información del cliente
+		int cantidadProductos = pedirCantidadProductos(scanner);
+
+		// 2. Crear arrays para almacenar los productos
+		String[] nombres = new String[cantidadProductos];
+		double[] precios = new double[cantidadProductos];
+		int[] unidades = new int[cantidadProductos];
+
+		// 3. Registrar cada producto
+		double subtotal = registrarProductos(scanner, stock, nombres, precios, unidades);
+
+		// 4. Preguntar si es socio
+		boolean esSocio = esClienteSocio(scanner);
+
+		// 5. Calcular todos los importes
+		ResultadoCalculos calculos = calcularImportes(subtotal, esSocio);
+
+		// 6. Mostrar el ticket de compra
+		mostrarTicket(nombres, precios, unidades, subtotal, calculos);
+	}
+
+	// ============= CLASE PARA ORGANIZAR RESULTADOS =============
+
+	/**
+	 * Clase que contiene todos los resultados del cálculo Mejor que usar arrays
+	 * porque es más claro
+	 */
+	private static class ResultadoCalculos {
+		double descuentoVolumen; // Descuento por compra >100€
+		double descuentoSocio; // Descuento adicional por socio
+		double baseImponible; // Base sobre la que se calcula IVA
+		double importeIVA; // Cantidad de IVA
+		double totalPagar; // Total final a pagar
+	}
+
+	// ============= MÉTODOS DE INICIALIZACIÓN =============
+
+	/**
+	 * Prepara el inventario con stock inicial
+	 */
+	private static int[] inicializarStock(int tamano, int stockInicial) {
+		int[] stock = new int[tamano];
 		for (int i = 0; i < stock.length; i++) {
 			stock[i] = stockInicial;
 		}
@@ -80,34 +103,124 @@ public class CajaMagnifica {
 	}
 
 	/**
-	 * Lee un número entero y valida que esté dentro de un rango [min, max]. Si el
-	 * usuario introduce texto u otro tipo de dato, se captura
-	 * InputMismatchException, se limpia el buffer y se repregunta.
-	 *
-	 * @param scanner scanner de entrada.
-	 * @param mensaje mensaje a mostrar al usuario.
-	 * @param min     valor mínimo permitido.
-	 * @param max     valor máximo permitido.
-	 * @return entero válido dentro del rango.
+	 * Muestra mensaje de bienvenida al sistema
 	 */
-	private static int leerEnteroEnRango(Scanner scanner, String mensaje, int min, int max) {
-		int valor = 0;
-		boolean valido = false;
+	private static void mostrarMensajeBienvenida() {
+		System.out.println("=================================");
+		System.out.println("   SISTEMA DE CAJA REGISTRADORA   ");
+		System.out.println("=================================");
+	}
 
-		while (!valido) {
+	/**
+	 * Muestra mensaje de despedida
+	 */
+	private static void mostrarMensajeDespedida() {
+		System.out.println("\n=================================");
+		System.out.println("  ¡Gracias por usar el sistema!  ");
+		System.out.println("=================================");
+	}
+
+	// ============= MÉTODOS DE ENTRADA DE DATOS =============
+
+	/**
+	 * Pregunta cuántos productos va a comprar el cliente
+	 */
+	private static int pedirCantidadProductos(Scanner scanner) {
+		String mensaje = "¿Cuántos productos diferentes vas a comprar?";
+		return leerEnteroValidado(scanner, mensaje, MIN_PRODUCTOS, MAX_PRODUCTOS);
+	}
+
+	/**
+	 * Registra todos los productos de una compra
+	 * 
+	 * @return subtotal de la compra (sin descuentos)
+	 */
+	private static double registrarProductos(Scanner scanner, int[] stock, String[] nombres, double[] precios,
+			int[] unidades) {
+		double subtotal = 0.0;
+
+		for (int i = 0; i < nombres.length; i++) {
+			System.out.println("\n--- PRODUCTO " + (i + 1) + " ---");
+
+			// Pedir datos del producto
+			nombres[i] = pedirNombreProducto(scanner, i);
+			precios[i] = pedirPrecioProducto(scanner, i);
+			unidades[i] = pedirUnidadesProducto(scanner, i);
+
+			// Calcular subtotal parcial
+			double totalLinea = precios[i] * unidades[i];
+			subtotal += totalLinea;
+
+			// Actualizar inventario
+			actualizarInventario(stock, nombres[i], i, unidades[i]);
+		}
+
+		return subtotal;
+	}
+
+	/**
+	 * Pide y valida el nombre de un producto
+	 */
+	private static String pedirNombreProducto(Scanner scanner, int numeroProducto) {
+		String mensaje = "Nombre del producto " + (numeroProducto + 1) + ":";
+		return leerTextoNoVacio(scanner, mensaje);
+	}
+
+	/**
+	 * Pide y valida el precio de un producto
+	 */
+	private static double pedirPrecioProducto(Scanner scanner, int numeroProducto) {
+		String mensaje = "Precio del producto " + (numeroProducto + 1) + " (€):";
+		return leerDecimalValidado(scanner, mensaje, 0.0); // Precio mínimo 0€
+	}
+
+	/**
+	 * Pide y valida las unidades de un producto
+	 */
+	private static int pedirUnidadesProducto(Scanner scanner, int numeroProducto) {
+		String mensaje = "Unidades del producto " + (numeroProducto + 1) + ":";
+		return leerEnteroValidado(scanner, mensaje, MIN_UNIDADES, MAX_UNIDADES);
+	}
+
+	/**
+	 * Pregunta si el cliente es socio del establecimiento
+	 */
+	private static boolean esClienteSocio(Scanner scanner) {
+		String mensaje = "¿Es socio de nuestra tienda?";
+		return leerRespuestaSiNo(scanner, mensaje);
+	}
+
+	/**
+	 * Pregunta si hay otro cliente esperando
+	 */
+	private static boolean preguntarOtraCompra(Scanner scanner) {
+		String mensaje = "¿Hay otro cliente para atender?";
+		return leerRespuestaSiNo(scanner, mensaje);
+	}
+
+	// ============= MÉTODOS DE VALIDACIÓN DE ENTRADA =============
+
+	/**
+	 * Lee un número entero validando que esté en un rango
+	 */
+	private static int leerEnteroValidado(Scanner scanner, String mensaje, int minimo, int maximo) {
+		int valor = 0;
+		boolean esValido = false;
+
+		while (!esValido) {
 			try {
 				System.out.println(mensaje);
 				valor = scanner.nextInt();
-				scanner.nextLine();
+				scanner.nextLine(); // Limpiar buffer
 
-				if (valor < min || valor > max) {
-					System.out.println("Error: el valor debe estar entre " + min + " y " + max + ".");
+				if (valor < minimo || valor > maximo) {
+					System.out.println("Error: debe ser entre " + minimo + " y " + maximo);
 				} else {
-					valido = true;
+					esValido = true;
 				}
 			} catch (InputMismatchException e) {
-				System.out.println("Error: debes introducir un número entero.");
-				scanner.nextLine();
+				System.out.println("Error: introduce un número entero válido");
+				scanner.nextLine(); // Limpiar entrada incorrecta
 			}
 		}
 
@@ -115,33 +228,26 @@ public class CajaMagnifica {
 	}
 
 	/**
-	 * Lee un número decimal (double) y valida que sea mayor o igual que un mínimo.
-	 * Si el usuario introduce texto u otro tipo de dato, se captura
-	 * InputMismatchException, se limpia el buffer y se repregunta.
-	 *
-	 * @param scanner scanner de entrada.
-	 * @param mensaje mensaje a mostrar al usuario.
-	 * @param min     valor mínimo permitido.
-	 * @return double válido (>= min).
+	 * Lee un número decimal validando que sea mayor o igual a un mínimo
 	 */
-	private static double leerDoubleMin(Scanner scanner, String mensaje, double min) {
+	private static double leerDecimalValidado(Scanner scanner, String mensaje, double minimo) {
 		double valor = 0.0;
-		boolean valido = false;
+		boolean esValido = false;
 
-		while (!valido) {
+		while (!esValido) {
 			try {
 				System.out.println(mensaje);
 				valor = scanner.nextDouble();
-				scanner.nextLine();
+				scanner.nextLine(); // Limpiar buffer
 
-				if (valor < min) {
-					System.out.println("Error: el valor debe ser mayor o igual que " + min + ".");
+				if (valor < minimo) {
+					System.out.println("Error: debe ser mayor o igual a " + minimo);
 				} else {
-					valido = true;
+					esValido = true;
 				}
 			} catch (InputMismatchException e) {
-				System.out.println("Error: debes introducir un número (por ejemplo 12.5).");
-				scanner.nextLine();
+				System.out.println("Error: introduce un número válido (ej: 12.50)");
+				scanner.nextLine(); // Limpiar entrada incorrecta
 			}
 		}
 
@@ -149,131 +255,140 @@ public class CajaMagnifica {
 	}
 
 	/**
-	 * Lee un texto no vacío (no permite cadenas en blanco).
-	 *
-	 * @param scanner scanner de entrada.
-	 * @param mensaje mensaje a mostrar al usuario.
-	 * @return texto no vacío (trim aplicado).
+	 * Lee texto asegurándose de que no esté vacío
 	 */
 	private static String leerTextoNoVacio(Scanner scanner, String mensaje) {
-		String texto;
+		String texto = "";
 
-		while (true) {
+		while (texto.isEmpty()) {
 			System.out.println(mensaje);
 			texto = scanner.nextLine().trim();
 
-			if (!texto.isEmpty()) {
-				return texto;
+			if (texto.isEmpty()) {
+				System.out.println("Error: el nombre no puede estar vacío");
 			}
-
-			System.out.println("Error: el texto no puede estar vacío.");
 		}
+
+		return texto;
 	}
 
 	/**
-	 * Lee una respuesta S/N y devuelve true si la respuesta es S, false si es N.
-	 *
-	 * @param scanner scanner de entrada.
-	 * @param mensaje mensaje a mostrar al usuario.
-	 * @return true si S, false si N.
+	 * Lee una respuesta S/N y devuelve true para S, false para N
 	 */
-	private static boolean leerSiNo(Scanner scanner, String mensaje) {
+	private static boolean leerRespuestaSiNo(Scanner scanner, String mensaje) {
 		while (true) {
 			System.out.println(mensaje + " (S/N)");
-			String respuesta = scanner.nextLine().trim();
+			String respuesta = scanner.nextLine().trim().toUpperCase();
 
-			if (respuesta.equalsIgnoreCase("S"))
+			if (respuesta.equals("S")) {
 				return true;
-			if (respuesta.equalsIgnoreCase("N"))
+			} else if (respuesta.equals("N")) {
 				return false;
-
-			System.out.println("Error: escribe solo S o N.");
+			} else {
+				System.out.println("Error: responde solo con S (Sí) o N (No)");
+			}
 		}
 	}
 
+	// ============= MÉTODOS DE GESTIÓN DE STOCK =============
+
 	/**
-	 * Calcula el índice de stock a partir del nombre del producto y su posición.
-	 * NOTA: esta lógica es una simulación heredada del código sucio.
-	 *
-	 * @param nombreProducto nombre del producto.
-	 * @param posicion       posición del producto dentro del ticket (0..n-1).
-	 * @param tamStock       tamaño del stock.
-	 * @return índice válido del stock.
+	 * Calcula en qué posición del array de stock se guarda un producto Usa una
+	 * fórmula fija basada en el nombre y posición
 	 */
-	private static int obtenerIndexStock(String nombreProducto, int posicion, int tamStock) {
-		return (nombreProducto.length() * 17 + posicion * 3) % tamStock;
+	private static int calcularPosicionStock(String nombreProducto, int indiceProducto) {
+		// Fórmula fija: longitud del nombre × 17 + índice × 3
+		int calculo = (nombreProducto.length() * 17 + indiceProducto * 3);
+		// Asegurar que está dentro del array
+		return calculo % TAMANO_STOCK;
 	}
 
 	/**
-	 * Actualiza el stock restando unidades y muestra un aviso si queda negativo.
-	 *
-	 * @param stock      array de stock.
-	 * @param indexStock índice a actualizar.
-	 * @param unidades   unidades a restar.
+	 * Actualiza el inventario restando las unidades vendidas
 	 */
-	private static void actualizarStock(int[] stock, int indexStock, int unidades) {
-		stock[indexStock] -= unidades;
-		if (stock[indexStock] < 0) {
-			System.out.println("Aviso: stock negativo (simulación).");
+	private static void actualizarInventario(int[] stock, String nombreProducto, int indiceProducto,
+			int unidadesVendidas) {
+		int posicion = calcularPosicionStock(nombreProducto, indiceProducto);
+		stock[posicion] -= unidadesVendidas; // Restar del stock
+
+		// Verificar si nos quedamos sin existencias
+		if (stock[posicion] < 0) {
+			System.out.println("Aviso: este producto ha quedado con stock negativo");
 		}
 	}
 
+	// ============= MÉTODOS DE CÁLCULO =============
+
 	/**
-	 * Calcula descuentos, base imponible, IVA y total. Devuelve un array con:
-	 * [0]=descuentoSubtotal, [1]=descuentoSocio, [2]=baseImponible, [3]=importeIva,
-	 * [4]=total
-	 *
-	 * @param subtotal     subtotal antes de descuentos.
-	 * @param esSocio      indica si el cliente es socio.
-	 * @param umbral       umbral para aplicar descuento de subtotal.
-	 * @param descSubtotal descuento por superar umbral (0..1).
-	 * @param descSocio    descuento adicional si es socio (0..1).
-	 * @param iva          iva (0..1).
-	 * @return array de 5 posiciones con los totales.
+	 * Calcula todos los importes de la factura
 	 */
-	private static double[] calcularTotales(double subtotal, boolean esSocio, double umbral, double descSubtotal,
-			double descSocio, double iva) {
+	private static ResultadoCalculos calcularImportes(double subtotal, boolean esSocio) {
+		ResultadoCalculos resultado = new ResultadoCalculos();
 
-		double descuento1 = subtotal > umbral ? subtotal * descSubtotal : 0.0;
-		double subtotalConDescuento = subtotal - descuento1;
+		// 1. Descuento por compra grande (>100€)
+		if (subtotal > UMBRAL_DESCUENTO) {
+			resultado.descuentoVolumen = subtotal * DESCUENTO_MAS_DE_100;
+		} else {
+			resultado.descuentoVolumen = 0.0;
+		}
 
-		double descuento2 = esSocio ? subtotalConDescuento * descSocio : 0.0;
+		// 2. Calcular subtotal después del primer descuento
+		double subtotalConDescuento = subtotal - resultado.descuentoVolumen;
 
-		double baseImponible = subtotalConDescuento - descuento2;
-		double importeIva = baseImponible * iva;
-		double total = baseImponible + importeIva;
+		// 3. Descuento adicional para socios
+		if (esSocio) {
+			resultado.descuentoSocio = subtotalConDescuento * DESCUENTO_POR_SOCIO;
+		} else {
+			resultado.descuentoSocio = 0.0;
+		}
 
-		return new double[] { descuento1, descuento2, baseImponible, importeIva, total };
+		// 4. Calcular base imponible (después de todos los descuentos)
+		resultado.baseImponible = subtotalConDescuento - resultado.descuentoSocio;
+
+		// 5. Calcular IVA (21% sobre la base imponible)
+		resultado.importeIVA = resultado.baseImponible * IVA;
+
+		// 6. Calcular total final
+		resultado.totalPagar = resultado.baseImponible + resultado.importeIVA;
+
+		return resultado;
 	}
 
-	/**
-	 * Imprime un ticket con el detalle de productos y el resumen de importes.
-	 *
-	 * @param nombres       nombres de productos.
-	 * @param precios       precios por unidad.
-	 * @param unidades      unidades por producto.
-	 * @param subtotal      subtotal sin descuentos.
-	 * @param descuento1    descuento por superar umbral.
-	 * @param descuento2    descuento por socio.
-	 * @param baseImponible base imponible.
-	 * @param iva           importe de IVA.
-	 * @param total         total final.
-	 */
-	private static void imprimirTicket(String[] nombres, double[] precios, int[] unidades, double subtotal,
-			double descuento1, double descuento2, double baseImponible, double iva, double total) {
+	// ============= MÉTODOS DE SALIDA =============
 
-		System.out.println("=========== TICKET ===========");
+	/**
+	 * Muestra el ticket de compra completo con buen formato
+	 */
+	private static void mostrarTicket(String[] nombres, double[] precios, int[] unidades, double subtotal,
+			ResultadoCalculos calculos) {
+
+		System.out.println("\n" + "=".repeat(40));
+		System.out.println("         TICKET DE COMPRA         ");
+		System.out.println("=".repeat(40));
+
+		// Detalle de productos
+		System.out.println("PRODUCTOS COMPRADOS:");
 		for (int i = 0; i < nombres.length; i++) {
-			double linea = precios[i] * unidades[i];
-			System.out.println((i + 1) + ") " + nombres[i] + "  " + unidades[i] + " x " + precios[i] + " = " + linea);
+			double totalLinea = precios[i] * unidades[i];
+			System.out.printf("  %-15s %3d x %6.2f€ = %7.2f€%n", nombres[i], unidades[i], precios[i], totalLinea);
 		}
-		System.out.println("------------------------------");
-		System.out.println("SUBTOTAL: " + subtotal);
-		System.out.println("DESC > 100: " + descuento1);
-		System.out.println("DESC SOCIO: " + descuento2);
-		System.out.println("BASE: " + baseImponible);
-		System.out.println("IVA: " + iva);
-		System.out.println("TOTAL: " + total);
-		System.out.println("==============================");
+
+		System.out.println("-".repeat(40));
+
+		// Resumen de importes
+		System.out.println("RESUMEN DE IMPORTES:");
+		System.out.printf("  Subtotal:              %9.2f€%n", subtotal);
+		System.out.printf("  Descuento (>100€):     %9.2f€%n", calculos.descuentoVolumen);
+		System.out.printf("  Descuento socio:       %9.2f€%n", calculos.descuentoSocio);
+		System.out.printf("  Base imponible:        %9.2f€%n", calculos.baseImponible);
+		System.out.printf("  IVA (21%%):             %9.2f€%n", calculos.importeIVA);
+
+		System.out.println("-".repeat(40));
+
+		// Total a pagar
+		System.out.printf("  TOTAL A PAGAR:         %9.2f€%n", calculos.totalPagar);
+
+		System.out.println("=".repeat(40));
+		System.out.println("¡Gracias por su compra!\n");
 	}
 }
