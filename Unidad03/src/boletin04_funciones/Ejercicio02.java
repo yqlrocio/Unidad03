@@ -1,51 +1,50 @@
 package boletin04_funciones;
 
+import java.util.Random;
+
 public class Ejercicio02 {
 
 	public static void main(String[] args) {
 		
-		/*
-		 *Diseñar la función: int maximo(int t[]),
-		 * que devuelva el máximo valor contenido 
-		 * en la tabla t. 
-		 */
-		
-		// 
-		int [][] matriz = {
-				{1,2,3},
-				{4,5,6}
-		}; 
-		
-		int [][] transpuesta = transponer(matriz); 
-		
-		System.out.println("Original: ");
-		imprimirMatriz(matriz); 
-		
-		System.out.println("Transpuesta: ");
-		imprimirMatriz(transpuesta);
-		
-		}
+	/*
+	 *Diseñar la función: int maximo(int t[]),
+	 * que devuelva el máximo valor contenido 
+	 * en la tabla t. 
+	 */
 	
-		public static int [][] transponer(int [][] matriz) {
-		if (matriz == null) {
-			throw new IllegalArgumentException("La matriz no puede ser null ");
+	// Creación del array
+			int[] array = new int[8];
+
+			// Se imprime el máximo valor de la tabla
+			System.out.println("El máximo valor contenido en la tabla es " + devuelveMaximo(array));
+
 		}
-		if (matriz.length == null ) {
-			throw new IllegalArgumentException ("La ");
-		}
-		
-		int filas = matriz.length;
-		int columas = matriz[0].length;
-		
-		for (int IindiceFila=0, indiceFila < fila; indiceFila++) { 
-			if(matriz[indiceFila] == null || matriz[indiceFila].length != columnas) {
-				throw new IllegalArgumentException ("Todas las filas deben tener el mismo número")			
+
+		/**
+		 * Función que recorre el array, comprueba el número máximo y devuelve el máximo
+		 * valor contenido en el array
+		 * 
+		 * @param array
+		 * @return valor máximo
+		 */
+
+		public static int devuelveMaximo(int[] array) {
+
+			Random rnd = new Random();
+
+			int max = Integer.MIN_VALUE;
+
+			int maximo = 0;
+
+			for (int i = 0; i < array.length; i++) {
+				array[i] = rnd.nextInt(1, 100);
+				if (array[i] > max) {
+					maximo = array[i];
+				}
 			}
+
+			return maximo;
+
 		}
-		int [][] resultado = new int [columnas][filas]; 
-		
-		for (int indice = 0; fila < filas; fila++) {
-			for ()
-		}
+
 	}
-}

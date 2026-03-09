@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class Ejercicio02_funciones {
 
-	//
 	public static void main(String[] args) {
 		/**
 		 * Necesitamos crear un programa para almacenar las notas de 4 alumnos 

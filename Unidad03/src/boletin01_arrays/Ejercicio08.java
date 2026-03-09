@@ -27,7 +27,7 @@ public class Ejercicio08 {
 		int place;
 
 		// The table where all the numbers will be saved
-		int table[] = new int[100];
+		int[] table = new int[100];
 
 		// We want to fill the table with random numbers
 		for (int i = 0; i < table.length; i++) {
