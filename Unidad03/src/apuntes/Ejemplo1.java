@@ -1,13 +1,14 @@
-package examenPrueba;
+package apuntes;
 
 import java.util.Scanner;
 
-/**
+public class Ejemplo1 {
+
+	/**
  * Aplicación que analiza si un mensaje oculto puede encontrarse dentro de un texto
  * como subsecuencia de caracteres.
  */
 
-public class ejemplo1 {
 
     //Carácter espacio que se elimina durante la normalización.
     private static final char SPACE = ' ';

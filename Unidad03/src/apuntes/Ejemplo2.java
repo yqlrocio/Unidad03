@@ -1,4 +1,4 @@
-package examenPrueba;
+package apuntes;
 
 import java.util.Scanner;
 
@@ -7,7 +7,7 @@ import java.util.Scanner;
  * Trabaja con arrays, strings, funciones, validación y menú interactivo.
  */
 
-public class ejemplo2 {
+public class Ejemplo2 {
 
     private static final int OPCION_SALIR = 8;
     private static final int LONGITUD_MINIMA_MENSAJE_LARGO = 20;
