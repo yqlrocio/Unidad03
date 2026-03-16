@@ -1,4 +1,4 @@
-package boletin05_collections;
+package boletin05_collections01;
 
 import java.util.ArrayList;
 import java.util.Scanner;
