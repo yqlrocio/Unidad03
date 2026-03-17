@@ -121,18 +121,18 @@ public class Chuletilla {
 //			formatted(Object... args) similar a format pero como metodo de instancia (Java 15+)
 	
 	
-	
-}
+Arrays.toString(boolean a)
+
 //		toString(array) convierte array a string legible
 //		deepToString(array) convierte array multidimensional a string
 //		asList(T... a) convierte array a Lista
 //		sort(array) ordena el array completo
 //		sort(array, fromIndex, toIndex) ordena parte del array
 //		parallelSort(array) ordena en paralelo para grandes arrays
-//		binarySearch(array, key) busca un elemento (array ordenado)
-//		binarySearch(array, fromIndex, toIndex, key) busca en un rango
+//		binarySearch(array, key) busca un endex, key) busca en un rango
 //		equals(array1, array2) compara si dos arrays son iguales
-//		deepEquals(array1, array2) compara arrays multidimensionales
+//		deepEquals(array1, array2) comparlemento (array ordenado)
+//		binarySearch(array, fromIndex, toIa arrays multidimensionales
 //		fill(array, value) llena todo el array con un valor
 //		fill(array, fromIndex, toIndex, value) llena un rango del array
 //		copyOf(original, newLength) copia array con nueva longitud
