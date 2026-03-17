@@ -6,7 +6,7 @@ import java.util.TreeMap;
 public class Ejercicio07 {
 
 	public static void main(String[] args) {
-
+		
 		/*
 		 *Crea un mini-diccionario español-inglés que contenga, al menos, 
 		 *20 palabras (con su correspondiente traducción). Utiliza un 

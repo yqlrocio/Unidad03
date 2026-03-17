@@ -6,6 +6,7 @@ import java.util.Random;
 public class Ejercicio02 {
 
 	public static void main(String[] args) {
+		
 		//--------------------------------------------------------------------------------------------------------------
 		/*
 		 * Realiza un programa que introduzca valores aleatorios (entre 0 y 100) en un ArrayList y que luego calcule 

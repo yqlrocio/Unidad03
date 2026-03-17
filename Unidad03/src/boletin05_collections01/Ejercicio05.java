@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Ejercicio05 {
 
 	public static void main(String[] args) {
+		
 		/*
 		 * Introduce por teclado, hasta que se introduzca “fin”, 
 		 * una serie de nombres, que se insertarán en una colección, 

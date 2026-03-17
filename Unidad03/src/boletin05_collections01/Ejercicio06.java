@@ -7,9 +7,10 @@ public class Ejercicio06 {
 
 	public static void main(String[] args) {
 		
-		/*
+		/*----------------------------------------------------------------
 		 * Repite la actividad anterior de forma que se inserten 
 		 * los nombres manteniendo el orden alfabético.
+		 *----------------------------------------------------------------
 		 */
 		
 		/**

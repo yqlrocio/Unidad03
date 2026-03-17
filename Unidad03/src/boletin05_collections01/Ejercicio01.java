@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Ejercicio01 {
 
 	public static void main(String[] args) {
+		
 		//--------------------------------------------------------------------------------------------------------------
 		/*
 		 * Crear una lista de números enteros positivos introducidos por consola hasta que se introduzca uno negativo. 
@@ -13,7 +14,7 @@ public class Ejercicio01 {
 		*/ 
 		//--------------------------------------------------------------------------------------------------------------
 
-		// Crear Scanner
+		// Crear Scanner 
 		Scanner reader = new Scanner(System.in);
 		
 		ArrayList<Integer> lista = new ArrayList<>();

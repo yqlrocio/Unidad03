@@ -7,7 +7,7 @@ import java.util.Random;
 public class Ejercicio03 {
 
 	public static void main(String[] args) {
-
+		
 		/*
 		 * Realiza un programa que genere 30 números enteros aleatorios, 
 		 * con valores comprendidos entre 1 y 10. Se deben almacenar en 

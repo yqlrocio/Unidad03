@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class Ejercicio08 {
 
 	public static void main(String[] args) {
-		
 
 		/*
 		 *Implementa el control de acceso al área restringida de un 
