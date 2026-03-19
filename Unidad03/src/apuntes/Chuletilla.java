@@ -121,7 +121,7 @@ public class Chuletilla {
 //			formatted(Object... args) similar a format pero como metodo de instancia (Java 15+)
 	
 	
-Arrays.toString(boolean a)
+// Arrays.toString(boolean a)
 
 //		toString(array) convierte array a string legible
 //		deepToString(array) convierte array multidimensional a string
@@ -172,7 +172,7 @@ Arrays.toString(boolean a)
 //		random.longs(long streamSize, long randomNumberOrigin, long randomNumberBound) genera stream de longs con tamaño y rango especifico
 //	
 	
-	
+	}
 	
 	
 }
