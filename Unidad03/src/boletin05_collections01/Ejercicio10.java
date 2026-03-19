@@ -20,7 +20,7 @@ public class Ejercicio10 {
 		//		0. Salir
 		//		El orden en el que se almacenan los productos no importa.
 
-		Scanner sc = new Scanner(System.in);
+		Scanner scanner = new Scanner(System.in);
         ArrayList<String> nombres = new ArrayList<>();
         ArrayList<Double> precios = new ArrayList<>();
 
@@ -34,17 +34,17 @@ public class Ejercicio10 {
             System.out.println("0. Salir");
             System.out.print("Opción: ");
 
-            opcion = sc.nextInt();
-            sc.nextLine(); 
+            opcion = scanner.nextInt();
+            scanner.nextLine(); 
 
             if (opcion == 1) {
                 // Alta de producto
                 System.out.print("Nombre: ");
-                String nombre = sc.nextLine();
+                String nombre = scanner.nextLine();
 
                 System.out.print("Precio: ");
-                double precio = sc.nextDouble();
-                sc.nextLine();
+                double precio = scanner.nextDouble();
+                scanner.nextLine();
 
                 nombres.add(nombre);
                 precios.add(precio);
@@ -54,7 +54,7 @@ public class Ejercicio10 {
             } else if (opcion == 2) {
                 // Baja de producto
                 System.out.print("Nombre a eliminar: ");
-                String nombre = sc.nextLine();
+                String nombre = scanner.nextLine();
 
                 boolean encontrado = false;
 
