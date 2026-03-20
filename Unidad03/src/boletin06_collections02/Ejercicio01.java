@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Parte01 {
+public class Ejercicio01 {
 
 	public static void main(String[] args) {
 		
@@ -38,8 +38,8 @@ public class Parte01 {
 		
 		// 2º LISTA: Creamos un ArrayList con números comprendidos desde 1 al 10 con el tamaño aleatorio de la lista creado anteriormente
 		ArrayList<Integer> numeros2 = new ArrayList<>(); 
-		for (int i = 1; i < 10; i++) {
-			int num2 = random.nextInt(10) + 1;
+		for (int i = 1; i < random.nextInt(); i++) {
+			int num2 = scanner.nextInt(10) + 1;
 	        numeros.add(num2);	
 	        } // Fin del for
 		
