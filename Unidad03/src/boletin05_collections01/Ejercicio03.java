@@ -39,6 +39,6 @@ public class Ejercicio03 {
 	// Mostrar por pantalla la lista ordenada
 	System.out.println("Lista ordenada: " + numeros);
     
-} // Fin del main
+	} // Fin del main
 
 } // Fin de la clase Ejercicio03
